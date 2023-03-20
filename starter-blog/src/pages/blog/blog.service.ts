@@ -7,8 +7,17 @@ export const blogApi = createApi({
   endpoints: (build) => ({
     getPost: build.query<Post[], void>({
       query: () => 'posts'
+    }),
+    addPost: build.mutation<Post, Omit<Post, 'id'>>({
+      query(body) {
+        return {
+          url: 'posts',
+          method: 'POST',
+          body
+        }
+      }
     })
   })
 })
 
-export const { useGetPostQuery } = blogApi
+export const { useGetPostQuery, useAddPostMutation } = blogApi
