@@ -6,7 +6,7 @@ export const blogApi = createApi({
   tagTypes: ['Posts'],
   baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:4000' }),
   endpoints: (build) => ({
-    getPost: build.query<Post[], void>({
+    getPosts: build.query<Post[], void>({
       query: () => 'posts',
       providesTags(result) {
         if (result) {
@@ -29,8 +29,31 @@ export const blogApi = createApi({
         }
       },
       invalidatesTags: (result, error, body) => [{ type: 'Posts', id: 'LIST' }]
+    }),
+    getPost: build.query<Post, string>({
+      query: (id) => `posts/${id}`
+    }),
+    updatePost: build.mutation<Post, { id: string; body: Post }>({
+      query(data) {
+        return {
+          url: `posts/${data.id}`,
+          method: 'PUT',
+          body: data.body
+        }
+      },
+      invalidatesTags: (result, error, data) => [{ type: 'Posts', id: data.id }]
+    }),
+    deletePost: build.mutation<{}, string>({
+      query(id) {
+        return {
+          url: `posts/${id}`,
+          method: 'DELETE'
+        }
+      },
+      invalidatesTags: (result, error, id) => [{ type: 'Posts', id }]
     })
   })
 })
 
-export const { useGetPostQuery, useAddPostMutation } = blogApi
+export const { useGetPostsQuery, useAddPostMutation, useDeletePostMutation, useGetPostQuery, useUpdatePostMutation } =
+  blogApi
